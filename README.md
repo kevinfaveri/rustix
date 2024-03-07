@@ -52,7 +52,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Kevcode - [@kevcode_art](https://twitter.com/kevcode_art)
+Kevin Faveri - [@kevfaveri](https://twitter.com/kevfaveri)
 
 Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfaveri/rustix)
 
