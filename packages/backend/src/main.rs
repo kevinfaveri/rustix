@@ -1,6 +1,4 @@
-use axum::Router;
-use std::net::SocketAddr;
-use tracing::info;
+use utils::server::serve_app;
 
 mod app;
 mod database;
@@ -21,21 +19,10 @@ mod tests;
 
 use errors::Error;
 use settings::SETTINGS;
-
-async fn serve(app: Router, port: u16) {
-  info!("Server listening on 127, 0, 0, 1: {}", &port);
-
-  let addr = SocketAddr::from(([127, 0, 0, 1], port));
-  let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-  axum::serve(listener, app)
-    .await
-    .expect("Failed to start server");
-}
-
 #[tokio::main]
 async fn main() {
   let app = app::create_app().await;
 
   let port = SETTINGS.server.port;
-  serve(app, port).await;
+  serve_app(app, port).await;
 }
