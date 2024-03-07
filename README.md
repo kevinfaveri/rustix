@@ -69,6 +69,7 @@ Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfa
 ## Roadmap
 BE REST API:
 - Add support for postgresql (with models and queries, replacing all mongo related dependencies; and fixing all tests) on Rust API
+- Add Redis support for caching
 - Add support for CORS on Rust API
 - Add support for dockerfile for BE
 - Add support for docker-compose with postgres connected to the dockerfile of BE
