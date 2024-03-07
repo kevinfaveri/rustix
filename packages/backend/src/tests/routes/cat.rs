@@ -1,4 +1,3 @@
-use reqwest;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
