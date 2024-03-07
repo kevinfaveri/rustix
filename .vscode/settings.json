@@ -2,6 +2,7 @@
   "rust-analyzer.linkedProjects": [
     "packages/backend/Cargo.toml"
   ],
-  "rust-analyzer.check.command": "clippy"
+  "rust-analyzer.check.command": "clippy",
+  "editor.formatOnSave": true,
 }
 

@@ -37,7 +37,7 @@ pub struct Claims {
 impl Claims {
   pub fn new(user: User) -> Self {
     Self {
-      exp: (chrono::Local::now() + chrono::Duration::days(30)).timestamp() as usize,
+      exp: (chrono::Local::now() + chrono::Duration::try_days(30).unwrap()).timestamp() as usize,
       iat: chrono::Local::now().timestamp() as usize,
       user: TokenUser::from(user),
     }

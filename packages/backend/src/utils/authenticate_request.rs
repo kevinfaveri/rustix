@@ -1,9 +1,8 @@
-use axum::{
-  async_trait,
-  extract::{FromRequestParts, TypedHeader},
+use axum::{async_trait, extract::FromRequestParts, http::request::Parts, RequestPartsExt};
+
+use axum_extra::{
   headers::{authorization::Bearer, Authorization},
-  http::request::Parts,
-  RequestPartsExt,
+  TypedHeader,
 };
 
 use crate::errors::AuthenticateError;

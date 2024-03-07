@@ -87,7 +87,7 @@ fn get_cats_route() {
     assert_eq!(body.len(), 2, "Should return two cats");
 
     // First cat (Cielito):
-    let cat = body.get(0).unwrap();
+    let cat = body.first().expect("Expected at least one cat in the response");
     assert_eq!(cat.name, "Cielito");
     assert_eq!(cat.user, user.id.unwrap());
 
