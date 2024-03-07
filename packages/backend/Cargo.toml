@@ -34,6 +34,13 @@ validator = { version = "0.17.0", features = ["derive"] }
 lazy_static = "1.4.0"
 mime = "0.3.17"
 bytes = "1.5.0"
+sqlx = { version = "0.7.3", features = [
+    "runtime-async-std-native-tls",
+    "postgres",
+    "chrono",
+    "uuid",
+] }
+
 # TODO: Remove bson and wither when postgresql gets integrated
 # Investigate if wither::bson can be used instead and activate this feature.
 bson = { version = "2.9.0", features = ["serde_with", "chrono-0_4"] }
