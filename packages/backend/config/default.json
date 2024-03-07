@@ -1,20 +1,24 @@
 {
-  "environment": "development",
+    "environment": "development",
 
-  "server": {
-    "port": 8080
-  },
-  
-  "database": {
-    "uri": "mongodb://localhost:27017",
-    "name": "rustapi"
-  },
-  
-  "auth": {
-    "secret": "secret"
-  },
+    "server": {
+        "port": 8080
+    },
 
-  "logger": {
-    "level": "debug"
-  }
+    "database": {
+        "uri": "postgresql://postgres:postgres@localhost:5432/company_crud?schema=public",
+        "name": "company_crud",
+        "host": "127.0.0.1",
+        "port": "5432",
+        "user": "postgres",
+        "password": "postgres"
+    },
+
+    "auth": {
+        "secret": "secret"
+    },
+
+    "logger": {
+        "level": "debug"
+    }
 }
