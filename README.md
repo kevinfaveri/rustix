@@ -29,7 +29,11 @@ To get a local copy up and running follow these simple steps.
    ```
 4. Build and run the Rust backend
    ```sh
-   cd ../backend && cargo run
+   cd ../backend && cargo watch -x run
+   ```
+5. In another terminal, run the tests for the Rust backend
+   ```sh
+   cd ../backend && cargo nextest run
    ```
 
 ## Usage
@@ -64,6 +68,5 @@ Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfa
 
 ## Roadmap
 - Add support for postgresql on Rust API
-- Add support for prettier and rust analyzer / clip
 - Add Remix with tailwind config, prettier, eslint
 - Add docker-compose for running both services with hot reload
