@@ -21,6 +21,10 @@ pub struct Logger {
 pub struct Database {
   pub uri: String,
   pub name: String,
+  pub user: String,
+  pub password: String,
+  pub host: String,
+  pub port: u16,
 }
 
 #[derive(Debug, Clone, Deserialize)]
