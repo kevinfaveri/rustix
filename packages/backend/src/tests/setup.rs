@@ -4,8 +4,6 @@ use tokio::runtime::Runtime;
 use tokio::sync::OnceCell;
 
 use crate::app::create_app;
-use crate::models::cat::Cat;
-use crate::models::user::User;
 use crate::settings::SETTINGS;
 use crate::utils::server::serve_app;
 
