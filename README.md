@@ -68,6 +68,7 @@ Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfa
 
 ## Roadmap
 BE REST API:
+- Add config like crate https://github.com/allan2/dotenvy
 - Add support for postgresql (with models and queries, replacing all mongo related dependencies; and fixing all tests) on Rust API
 - Add Redis support for caching
 - Add support for CORS on Rust API
