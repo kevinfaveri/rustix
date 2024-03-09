@@ -1,15 +1,12 @@
 {
   "environment": "test",
-
   "server": {
     "port": 8088
   },
-
   "database": {
     "uri": "mongodb://localhost:27017",
-    "name": "rustapi-test"
+    "name": "rustixapi-test"
   },
-
   "logger": {
     "level": "error"
   }

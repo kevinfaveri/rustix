@@ -1,19 +1,15 @@
 {
   "environment": "development",
-
   "server": {
     "port": 8080
   },
-  
   "database": {
     "uri": "mongodb://localhost:27017",
-    "name": "rustapi"
+    "name": "rustixapi"
   },
-  
   "auth": {
     "secret": "secret"
   },
-
   "logger": {
     "level": "debug"
   }
