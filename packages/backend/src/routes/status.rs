@@ -1,5 +1,4 @@
 use axum::{routing::get, Json, Router};
-use bson::doc;
 use serde::{Deserialize, Serialize};
 use tracing::debug;
 

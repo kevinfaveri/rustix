@@ -7,18 +7,8 @@ use bytes::{BufMut, BytesMut};
 use serde::Serialize;
 use tracing::error;
 
-use crate::errors::Error;
-
-pub type CustomResponseResult<T> = Result<CustomResponse<T>, Error>;
-
 #[derive(Debug)]
 pub struct CustomResponse<T: Serialize> {
-  pub body: Option<T>,
-  pub status_code: StatusCode,
-  pub pagination: Option<ResponsePagination>,
-}
-
-pub struct CustomResponseBuilder<T: Serialize> {
   pub body: Option<T>,
   pub status_code: StatusCode,
   pub pagination: Option<ResponsePagination>,
@@ -29,51 +19,6 @@ pub struct ResponsePagination {
   pub count: u64,
   pub offset: u64,
   pub limit: u32,
-}
-
-impl<T> Default for CustomResponseBuilder<T>
-where
-  T: Serialize,
-{
-  fn default() -> Self {
-    Self {
-      body: None,
-      status_code: StatusCode::OK,
-      pagination: None,
-    }
-  }
-}
-
-impl<T> CustomResponseBuilder<T>
-where
-  T: Serialize,
-{
-  pub fn new() -> Self {
-    Self::default()
-  }
-
-  pub fn body(mut self, body: T) -> Self {
-    self.body = Some(body);
-    self
-  }
-
-  pub fn status_code(mut self, status_code: StatusCode) -> Self {
-    self.status_code = status_code;
-    self
-  }
-
-  pub fn pagination(mut self, pagination: ResponsePagination) -> Self {
-    self.pagination = Some(pagination);
-    self
-  }
-
-  pub fn build(self) -> CustomResponse<T> {
-    CustomResponse {
-      body: self.body,
-      status_code: self.status_code,
-      pagination: self.pagination,
-    }
-  }
 }
 
 impl<T> IntoResponse for CustomResponse<T>
