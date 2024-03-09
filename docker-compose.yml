@@ -1,0 +1,25 @@
+version: "3.1"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME:
+      MONGO_INITDB_ROOT_PASSWORD:
+  rust:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./packages/backend:/app
+      - ./packages/backend/target:/app/target
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      CARGO_PKG_NAME: rustixapi
+      CARGO_TARGET_DIR: /app/target
+      RUN_MODE: development
+      PORT: 8080

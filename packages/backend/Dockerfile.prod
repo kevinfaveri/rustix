@@ -17,7 +17,7 @@ WORKDIR /app
 COPY config /app/config
 COPY --from=builder /app/target/release/rustixapi /usr/local/bin
 
-EXPOSE 8080
+EXPOSE $PORT
 ENV CARGO_PKG_NAME=$CARGO_PKG_NAME
 ENV RUN_MODE=$RUN_MODE
 ENV PORT=$PORT
