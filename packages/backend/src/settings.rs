@@ -1,7 +1,7 @@
 use config::{Config, ConfigError, Environment, File};
 use lazy_static::lazy_static;
 use serde::Deserialize;
-use std::{env, fmt};
+use std::{env, fmt, io, path::PathBuf};
 
 lazy_static! {
   pub static ref SETTINGS: Settings = Settings::new().expect("Failed to setup settings");
@@ -38,12 +38,24 @@ pub struct Settings {
 }
 
 impl Settings {
+  fn get_current_dir() -> io::Result<PathBuf> {
+    let path = env::current_dir()?;
+    Ok(path)
+  }
+
   pub fn new() -> Result<Self, ConfigError> {
     let run_mode = env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
+    let path = Self::get_current_dir().unwrap();
+
+    let file_name_path = path.display();
 
     let mut builder = Config::builder()
-      .add_source(File::with_name("config/default"))
-      .add_source(File::with_name(&format!("config/{run_mode}")).required(false))
+      .add_source(File::with_name(
+        &format!("{file_name_path}/config/default",),
+      ))
+      .add_source(
+        File::with_name(&format!("{file_name_path}/config/{run_mode}.json",)).required(false),
+      )
       .add_source(File::with_name("config/local").required(false))
       .add_source(Environment::default().separator("__"));
 
