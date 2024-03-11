@@ -1,21 +1,17 @@
 use dotenvy::dotenv;
-use std::env;
-use utils::server::serve_app;
 
 mod app;
 mod errors;
 mod logger;
+mod routes;
 mod settings;
 mod utils;
 
-use settings::SETTINGS;
 #[tokio::main]
 async fn main() {
   dotenv().expect(".env file not found");
+  logger::setup();
   let app = app::create_app().await;
-  for (key, value) in env::vars() {
-    println!("{key}: {value}");
-  }
-  let port = SETTINGS.server_port;
-  serve_app(app, port).await;
+  let port = settings::SETTINGS.server_port;
+  utils::server::serve_app(app, port).await;
 }

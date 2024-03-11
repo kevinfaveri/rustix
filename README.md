@@ -12,6 +12,7 @@ To get a local copy up and running follow these simple steps.
 - Cargo
 - Node.js
 - npm or yarn
+- Docker and Docker Compose
 
 ### Installation
 
@@ -23,18 +24,17 @@ To get a local copy up and running follow these simple steps.
    ```sh
    cd rustix
    ```
-3. Install NPM packages for the frontend
+3. TODO: Ignore: Install NPM packages for the frontend
    ```sh
    cd frontend && npm install
    ```
-4. Build and run the Rust backend
+4. Start the backend services with Docker Compose
    ```sh
-   cd ../backend && cargo watch -x run
+   cd ../backend && docker-compose up --build -d
    ```
-5. In another terminal, run the tests for the Rust backend
+5. Build and run the Rust backend using Cargo Watch
    ```sh
-   cd ../backend && cargo nextest run
-   ```
+   cargo watch -x run
 
 ## Usage
 
