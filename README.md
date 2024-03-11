@@ -68,16 +68,16 @@ Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfa
 
 ## Roadmap
 BE REST API:
-- Add config like crate https://github.com/allan2/dotenvy
 - Add support for postgresql (with models and queries, replacing all mongo related dependencies; and fixing all tests) on Rust API
 - Add Redis support for caching
 - Add support for CORS on Rust API
-- Add support for dockerfile for BE
-- Add support for docker-compose with postgres connected to the dockerfile of BE
-- Add support for Diesel ORM on Rust API
+- MAYBE - Add support for Diesel ORM on Rust API
 - Add support DB migration solutions (study crates for the purpose)
 - Do pair review on all dependencies used; if everything is good practices, and if there is a better way to do it
 
 FE:
 - Add Remix with tailwind config, prettier, eslint
 - Add docker-compose for running both FE with hot reload
+
+Project:
+- Implement a fun project (s00n)
