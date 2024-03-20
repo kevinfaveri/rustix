@@ -1,4 +1,4 @@
-# Rustix WebApp
+# TriPPP WebApp
 ### Rust Rest API + Remix FrontEnd
 This is a fullstack web application built with Rust and TypeScript.
 
@@ -18,11 +18,11 @@ To get a local copy up and running follow these simple steps.
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/kevinfaveri/rustix.git
+   git clone https://github.com/kevinfaveri/trippp.git
    ```
 2. Navigate into the project directory
    ```sh
-   cd rustix
+   cd trippp
    ```
 3. TODO: Ignore: Install NPM packages for the frontend
    ```sh
@@ -58,7 +58,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Kevin Faveri - [@kevfaveri](https://twitter.com/kevfaveri)
 
-Project Link: [https://github.com/kevinfaveri/rustix](https://github.com/kevinfaveri/rustix)
+Project Link: [https://github.com/kevinfaveri/trippp](https://github.com/kevinfaveri/trippp)
 
 ## Acknowledgements
 

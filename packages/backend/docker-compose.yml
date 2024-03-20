@@ -9,6 +9,6 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password123
-      POSTGRES_DB: rustix_sqlx
+      POSTGRES_DB: trippp_sqlx
     ports:
       - "6500:5432"

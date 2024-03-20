@@ -1,5 +1,5 @@
 [package]
-name = "rustix-api"
+name = "trippp-api"
 version = "0.1.0"
 authors = ["Kevin Faveri <kevin@faveri.dev>"]
 edition = "2021"
