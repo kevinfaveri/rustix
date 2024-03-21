@@ -1,5 +1,6 @@
-use axum::Router;
+use axum::{Extension, Router};
 use http::header;
+use sqlx::{Pool, Postgres};
 use tower_http::{
   compression::CompressionLayer, cors::CorsLayer, propagate_header::PropagateHeaderLayer,
   sensitive_headers::SetSensitiveHeadersLayer, trace,
@@ -7,9 +8,9 @@ use tower_http::{
 
 use crate::routes;
 
-pub async fn create_app() -> Router {
+pub async fn create_app(db: Pool<Postgres>) -> Router {
   Router::new()
-    .merge(routes::status::create_route())
+    .merge(routes::status::create_router())
     // High level logging of requests and responses
     .layer(
       trace::TraceLayer::new_for_http()
@@ -31,4 +32,5 @@ pub async fn create_app() -> Router {
     // CORS configuration. This should probably be more restrictive in
     // production.
     .layer(CorsLayer::permissive())
+    .layer(Extension(db))
 }
