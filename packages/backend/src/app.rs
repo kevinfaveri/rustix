@@ -11,6 +11,7 @@ use crate::routes;
 pub async fn create_app(db: Pool<Postgres>) -> Router {
   Router::new()
     .merge(routes::status::create_router())
+    .merge(routes::user::create_router())
     // High level logging of requests and responses
     .layer(
       trace::TraceLayer::new_for_http()

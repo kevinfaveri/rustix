@@ -25,8 +25,9 @@ tower-http = { version = "0.5.2", features = [
   "sensitive-headers",
   "cors",
 ] }
+oxide-auth = { version = "0.5.4" }
 http = "1.1.0"
-chrono = "0.4.35"
+chrono = { version = "0.4.35", features = ["serde"] }
 async-trait = "0.1.77"
 jsonwebtoken = "9.2.0"
 bcrypt = "0.15.0"

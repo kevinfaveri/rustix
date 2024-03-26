@@ -1,23 +1,22 @@
 use serde::{Deserialize, Serialize};
-use utils::validation;
-use uuid::Uuid;
 use validator::Validate;
 
 #[derive(Deserialize, Serialize, Debug, Validate)]
+#[allow(non_snake_case)]
 pub struct CreateTripplanBoxSchema {
   #[validate(length(min = 1, max = 255))]
   pub title: String,
   #[validate(length(min = 1))]
   pub description: String,
-  #[validate(length(equal = 36))]
   pub booked: bool,
   pub published: bool,
   pub publishedLink: Option<String>,
-  #[validate(length(min = 1), custom = "utils::validation::validate_view_mode")]
-  pub viewMode: String,
+  #[validate(custom(function = "crate::utils::validators::validate_view_mode"))]
+  pub viewMode: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Validate)]
+#[allow(non_snake_case)]
 pub struct UpdateTripplanBoxSchema {
   #[validate(length(min = 1, max = 255))]
   pub title: Option<String>,
@@ -26,6 +25,6 @@ pub struct UpdateTripplanBoxSchema {
   pub booked: Option<bool>,
   pub published: Option<bool>,
   pub publishedLink: Option<String>,
-  #[validate(length(min = 1), custom = "utils::validation::validate_view_mode")]
+  #[validate(custom(function = "crate::utils::validators::validate_view_mode"))]
   pub viewMode: Option<String>,
 }

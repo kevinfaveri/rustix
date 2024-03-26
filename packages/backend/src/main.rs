@@ -4,9 +4,12 @@ mod app;
 mod database;
 mod error;
 mod logger;
+mod models;
+mod repositories;
 mod routes;
 mod settings;
 mod utils;
+mod validation;
 
 #[tokio::main]
 async fn main() {
