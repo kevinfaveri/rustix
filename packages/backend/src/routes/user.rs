@@ -4,8 +4,10 @@ use crate::{
   repositories::user,
   validation::user::{CreateUserSchema, UpdateUserSchema},
 };
-use axum::{extract::Path, routing::*, Extension, Json};
+use axum::{extract::Path, middleware, routing::*, Extension, Json};
 use sqlx::PgPool;
+
+use super::middlewares::check_auth;
 
 // TODO: Should add password hashing, validation, and other security measures
 async fn create_user(
@@ -50,4 +52,5 @@ pub fn create_router() -> Router {
       "/users/:username",
       get(get_user).patch(update_user).delete(delete_user),
     )
+    .route_layer(middleware::from_fn(check_auth))
 }

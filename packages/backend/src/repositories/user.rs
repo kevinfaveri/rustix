@@ -13,7 +13,7 @@ pub async fn get_users(db: Extension<PgPool>) -> Result<Vec<UserModel>, Error> {
     UserModel,
     // language=PostgreSQL
     r#"
-        select *
+        select id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
         from users
         order by username
     "#,
@@ -24,18 +24,17 @@ pub async fn get_users(db: Extension<PgPool>) -> Result<Vec<UserModel>, Error> {
   Ok(users)
 }
 
-pub async fn get_user(db: Extension<PgPool>, username: String) -> Result<UserModel, Error> {
+pub async fn get_user(db: Extension<PgPool>, username_or_id: String) -> Result<UserModel, Error> {
   debug!("Get user...");
   let user = sqlx::query_as!(
     UserModel,
     // language=PostgreSQL
     r#"
-        select *
+        select id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
         from users
-        where username = $1
-        order by username
+        where username = $1 or id = $1::uuid
     "#,
-    username
+    username_or_id
   )
   .fetch_one(&*db)
   .await?;
@@ -51,16 +50,14 @@ pub async fn create_user(
     UserModel,
     // language=PostgreSQL
     r#"
-      INSERT INTO users (username, password, google_oauth, apple_oauth, discord_oauth, user_prompt_persona)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO users (username, user_name, user_avatar, user_prompt_persona)
+      VALUES ($1, $2, $3, $4)
       RETURNING *
     "#,
     user.username,
-    user.password,
-    user.googleOauth,
-    user.appleOauth,
-    user.discord_oauth,
-    user.userPromptPersona
+    user.user_name,
+    user.user_avatar,
+    user.user_prompt_persona
   )
   .fetch_one(&*db)
   .await?;
@@ -79,18 +76,14 @@ pub async fn update_user(
     r#"
       UPDATE users
       SET 
-        password = COALESCE($1, password),
-        google_oauth = COALESCE($2, google_oauth),
-        apple_oauth = COALESCE($3, apple_oauth),
-        discord_oauth = COALESCE($4, discord_oauth),
-        user_prompt_persona = COALESCE($5, user_prompt_persona)
-      WHERE username = $6
+        user_name = COALESCE($1, user_name),
+        user_avatar = COALESCE($2, user_avatar),
+        user_prompt_persona = COALESCE($3, user_prompt_persona)
+      WHERE username = $4
       RETURNING *
     "#,
-    user.password,
-    user.googleOauth,
-    user.appleOauth,
-    user.discordOauth,
+    user.user_name,
+    user.user_avatar,
     user.userPromptPersona,
     username
   )

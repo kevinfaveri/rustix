@@ -10,6 +10,7 @@ pub async fn serve_app(app: Router, port: u16) {
 
   let addr = SocketAddr::from(([127, 0, 0, 1], port));
   let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+
   axum::serve(listener, app.into_make_service())
     .await
     .expect("Failed to start server");

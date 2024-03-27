@@ -8,6 +8,8 @@ use validator::ValidationErrors;
 /// An API-friendly error type.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+  #[error("already authenticated")]
+  AlreadyAuthenticated,
   /// A SQLx call returned an error.
   ///
   /// The exact error contents are not reported to the user in order to avoid leaking
@@ -29,6 +31,9 @@ pub enum Error {
   #[allow(dead_code)]
   #[error("{0}")]
   Conflict(String),
+
+  #[error("unauthorized")]
+  Unauthorized,
 }
 
 impl IntoResponse for Error {
@@ -67,6 +72,8 @@ impl Error {
       Sqlx(_) | Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
       InvalidEntity(_) | UnprocessableEntity(_) => StatusCode::UNPROCESSABLE_ENTITY,
       Conflict(_) => StatusCode::CONFLICT,
+      Unauthorized => StatusCode::UNAUTHORIZED,
+      AlreadyAuthenticated => StatusCode::BAD_REQUEST,
     }
   }
 }

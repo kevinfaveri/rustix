@@ -14,6 +14,9 @@ pub struct Settings {
   pub database_name: String,
   pub auth_secret: String,
   pub logger_level: String,
+  pub google_client_id: String,
+  pub google_client_secret: String,
+  pub oauth_redirect_uri: String,
 }
 
 impl Settings {
@@ -34,6 +37,9 @@ impl Settings {
       database_name: env::var("POSTGRES_DB")?,
       auth_secret: env::var("AUTH_SECRET")?,
       logger_level: env::var("LOGGER_LEVEL")?,
+      google_client_id: env::var("GOOGLE_CLIENT_ID")?,
+      google_client_secret: env::var("GOOGLE_CLIENT_SECRET")?,
+      oauth_redirect_uri: env::var("OAUTH_REDIRECT_URI")?,
     })
   }
 }

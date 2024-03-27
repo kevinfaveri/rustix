@@ -68,16 +68,21 @@ Project Link: [https://github.com/kevinfaveri/trippp](https://github.com/kevinfa
 
 ## Roadmap
 BE REST API:
-- Add support for postgresql (with models and queries, replacing all mongo related dependencies; and fixing all tests) on Rust API
+- Fully test auth; make it ready for FE too
+-> To make it ready, use oauthredirecturi to test; and check with Rapid API that cookie gets correctly set for other requets; auth requests start working; etc
+-> Tests that logout works as expected by removing cookie, sesssion
+-> Tests that expiration works as expected if user don't logout
+-> Test that user data gets correctly saved (picture, name, etc) to the DB
+-> Add support for permission/roles in the DB, by using the user table to validate this stuff; check_auth_for_role gets added, too, then gate all user routes
+-> Add per user gated boxes by adding a check_auth_for_user (which tests the box is from that user, and only that user can access it)
 - Add Redis support for caching
-- Add support for CORS on Rust API
-- MAYBE - Add support for Diesel ORM on Rust API
-- Add support DB migration solutions (study crates for the purpose)
-- Do pair review on all dependencies used; if everything is good practices, and if there is a better way to do it
+- Add support for CORS on Rust API to be production ready
+- Check notion for adding the recipes / AI integration module / package / and scrapper of web data
 
 FE:
 - Add Remix with tailwind config, prettier, eslint
-- Add docker-compose for running both FE with hot reload
-
-Project:
-- Implement a fun project (s00n)
+- FE should have a route / monitor if it gets a couple query params like: IS_SUCCESS_LOGIN and then proxy all query params to the /oauth_return in the BE; or use some global variable / callback, that is waited on the login page
+-> This will be proof of concept of the recipe
+-> If user is not authenticated, the haiku bot will never get prompt injected; and will only provide a login option, saying: "You are not logged yet, please click Login with Google below for us to begin. I can't help you if you don't login"
+- After that, FE waits the turn of /oauth_return which is a new cookie to be set on the browser. Setting the cookie, all is good
+- Logout should work correctly removing the cookie too

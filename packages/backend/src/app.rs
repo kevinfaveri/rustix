@@ -1,4 +1,4 @@
-use axum::{Extension, Router};
+use axum::{middleware, routing::get, Extension, Router};
 use http::header;
 use sqlx::{Pool, Postgres};
 use tower_http::{
@@ -6,9 +6,14 @@ use tower_http::{
   sensitive_headers::SetSensitiveHeadersLayer, trace,
 };
 
-use crate::routes;
+use crate::{
+  models::user::UserData,
+  routes::{self, middlewares::inject_user_data},
+  utils::auth::{login, logout, oauth_callback},
+};
 
 pub async fn create_app(db: Pool<Postgres>) -> Router {
+  let user_data: Option<UserData> = None;
   Router::new()
     .merge(routes::status::create_router())
     .merge(routes::user::create_router())
@@ -30,8 +35,12 @@ pub async fn create_app(db: Pool<Postgres>) -> Router {
     .layer(PropagateHeaderLayer::new(header::HeaderName::from_static(
       "x-request-id",
     )))
-    // CORS configuration. This should probably be more restrictive in
-    // production.
+    .route("/login", get(login))
+    .route("/oauth_callback", get(oauth_callback))
+    .route("/logout", get(logout))
+    .route_layer(middleware::from_fn(inject_user_data))
+    // TODO: CORS configuration. This should probably be more restrictive in production
     .layer(CorsLayer::permissive())
     .layer(Extension(db))
+    .layer(Extension(user_data))
 }

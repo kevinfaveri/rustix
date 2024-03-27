@@ -5,10 +5,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    google_oauth VARCHAR(255),
-    apple_oauth VARCHAR(255),
-    discord_oauth VARCHAR(255),
+    user_name VARCHAR(255),
+    user_avatar VARCHAR(255),
     user_prompt_persona VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -38,4 +36,21 @@ CREATE TABLE messages (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (trippplanbox_id) REFERENCES trippplanbox(id)
+);
+
+CREATE TABLE "user_sessions" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "user_id" UUID NOT NULL,
+    "session_token_p1" text NOT NULL,
+    "session_token_p2" text NOT NULL,
+    "oauth_provider" text NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE "oauth2_state_storage" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "csrf_state" text NOT NULL,
+    "pkce_code_verifier" text NOT NULL
 );
