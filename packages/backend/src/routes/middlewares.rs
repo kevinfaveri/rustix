@@ -40,6 +40,7 @@ pub async fn inject_user_data(
               let expires_at = user_session.expires_at.and_utc().timestamp();
               if expires_at > Utc::now().timestamp() {
                 let user = get_user(db.clone(), user_session.user_id.to_string()).await;
+                debug!("Logged User: {:?}", user);
                 if let Ok(user) = user {
                   request.extensions_mut().insert(Some(UserData {
                     id: user.id,
@@ -79,6 +80,7 @@ pub async fn check_auth(
       .await?;
       return Err(Error::Unauthorized);
     }
+    debug!("Logged User: {:?}", user_data);
     Ok(next.run(request).await)
   } else {
     Err(Error::Unauthorized)

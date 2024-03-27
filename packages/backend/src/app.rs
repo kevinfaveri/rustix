@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use axum::{middleware, routing::get, Extension, Router};
 use http::header;
 use sqlx::{Pool, Postgres};
@@ -5,10 +7,12 @@ use tower_http::{
   compression::CompressionLayer, cors::CorsLayer, propagate_header::PropagateHeaderLayer,
   sensitive_headers::SetSensitiveHeadersLayer, trace,
 };
+use tracing::Level;
 
 use crate::{
   models::user::UserData,
   routes::{self, middlewares::inject_user_data},
+  settings::SETTINGS,
   utils::auth::{login, logout, oauth_callback},
 };
 
@@ -20,9 +24,15 @@ pub async fn create_app(db: Pool<Postgres>) -> Router {
     // High level logging of requests and responses
     .layer(
       trace::TraceLayer::new_for_http()
-        .make_span_with(trace::DefaultMakeSpan::new().include_headers(true))
-        .on_request(trace::DefaultOnRequest::new().level(tracing::Level::INFO))
-        .on_response(trace::DefaultOnResponse::new().level(tracing::Level::INFO)),
+        .make_span_with(trace::DefaultMakeSpan::new().include_headers(false))
+        .on_request(
+          trace::DefaultOnRequest::new()
+            .level(Level::from_str(SETTINGS.logger_level.as_str()).unwrap_or(Level::INFO)),
+        )
+        .on_response(
+          trace::DefaultOnResponse::new()
+            .level(Level::from_str(SETTINGS.logger_level.as_str()).unwrap_or(Level::INFO)),
+        ),
     )
     // Mark the `Authorization` request header as sensitive so it doesn't
     // show in logs.

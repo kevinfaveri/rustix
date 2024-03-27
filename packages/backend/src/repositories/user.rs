@@ -32,18 +32,37 @@ pub async fn get_users(db: Extension<PgPool>) -> Result<Vec<UserModel>, Error> {
 
 pub async fn get_user(db: Extension<PgPool>, username_or_id: String) -> Result<UserModel, Error> {
   debug!("Get user...");
-  let result = sqlx::query_as!(
-    UserModel,
-    // language=PostgreSQL
-    r#"
-        select id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
-        from users
-        where username = $1 or id = $1::uuid
-    "#,
-    username_or_id
-  )
-  .fetch_one(&*db)
-  .await;
+  let uuid_id = match uuid::Uuid::parse_str(&username_or_id) {
+    Ok(uuid) => Some(uuid),
+    Err(_) => None,
+  };
+  let result = if uuid_id.is_some() {
+    sqlx::query_as!(
+      UserModel,
+      // language=PostgreSQL
+      r#"
+          select id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
+          from users
+          where id = $1
+      "#,
+      uuid_id
+    )
+    .fetch_one(&*db)
+    .await
+  } else {
+    sqlx::query_as!(
+      UserModel,
+      // language=PostgreSQL
+      r#"
+          select id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
+          from users
+          where username = $1
+      "#,
+      username_or_id
+    )
+    .fetch_one(&*db)
+    .await
+  };
 
   match result {
     Ok(user) => Ok(user),
