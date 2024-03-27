@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use axum::{middleware, routing::get, Extension, Router};
+use axum::{middleware, Extension, Router};
 use http::header;
 use sqlx::{Pool, Postgres};
 use tower_http::{
@@ -9,18 +9,19 @@ use tower_http::{
 };
 use tracing::Level;
 
-use crate::{
-  models::user::UserData,
-  routes::{self, middlewares::inject_user_data},
-  settings::SETTINGS,
-  utils::auth::{login, logout, oauth_callback},
-};
+use crate::{middlewares::inject_user_data, models::user::UserData, routes, settings::SETTINGS};
 
 pub async fn create_app(db: Pool<Postgres>) -> Router {
+  let origins = [
+    "http://localhost:3000".parse().unwrap(),
+    "http://localhost:8080".parse().unwrap(),
+    "https://trippp.ai".parse().unwrap(),
+  ];
   let user_data: Option<UserData> = None;
   Router::new()
     .merge(routes::status::create_router())
     .merge(routes::user::create_router())
+    .merge(routes::auth::create_router())
     // High level logging of requests and responses
     .layer(
       trace::TraceLayer::new_for_http()
@@ -34,10 +35,11 @@ pub async fn create_app(db: Pool<Postgres>) -> Router {
             .level(Level::from_str(SETTINGS.logger_level.as_str()).unwrap_or(Level::INFO)),
         ),
     )
-    // Mark the `Authorization` request header as sensitive so it doesn't
-    // show in logs.
     .layer(SetSensitiveHeadersLayer::new(std::iter::once(
       header::AUTHORIZATION,
+    )))
+    .layer(SetSensitiveHeadersLayer::new(std::iter::once(
+      header::COOKIE,
     )))
     // Compress responses
     .layer(CompressionLayer::new())
@@ -45,12 +47,8 @@ pub async fn create_app(db: Pool<Postgres>) -> Router {
     .layer(PropagateHeaderLayer::new(header::HeaderName::from_static(
       "x-request-id",
     )))
-    .route("/login", get(login))
-    .route("/oauth_callback", get(oauth_callback))
-    .route("/logout", get(logout))
-    .route_layer(middleware::from_fn(inject_user_data))
-    // TODO: CORS configuration. This should probably be more restrictive in production
-    .layer(CorsLayer::permissive())
+    .route_layer(middleware::from_fn(inject_user_data::get_middleware_fn))
+    .layer(CorsLayer::new().allow_origin(origins))
     .layer(Extension(db))
     .layer(Extension(user_data))
 }

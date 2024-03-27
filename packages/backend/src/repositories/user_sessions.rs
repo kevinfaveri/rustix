@@ -70,18 +70,21 @@ pub async fn create_user_session(
 pub async fn delete_user_session(
   db: Extension<PgPool>,
   session_token_p1: &String,
-) -> Result<(), Error> {
-  match sqlx::query!(
+) -> Result<UserSessionModel, Error> {
+  match sqlx::query_as!(
+    UserSessionModel,
     // language=PostgreSQL
     r#"
-      DELETE FROM user_sessions WHERE session_token_p1 = $1
+      DELETE FROM user_sessions
+      WHERE session_token_p1 = $1
+      RETURNING id,user_id, session_token_p1, session_token_p2, expires_at, oauth_provider, created_at, updated_at
     "#,
     session_token_p1,
   )
-  .execute(&*db)
+  .fetch_one(&*db)
   .await
   {
-    Ok(_) => Ok(()),
+    Ok(user_session) => Ok(user_session),
     Err(err) => {
       error!("Failed to delete user session: {:?}", err);
       Err(Error::Sqlx(err))

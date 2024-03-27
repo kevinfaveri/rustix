@@ -4,6 +4,7 @@ mod app;
 mod database;
 mod error;
 mod logger;
+mod middlewares;
 mod models;
 mod repositories;
 mod routes;

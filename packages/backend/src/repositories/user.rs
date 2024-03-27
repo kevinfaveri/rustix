@@ -84,7 +84,7 @@ pub async fn create_user(
     r#"
       INSERT INTO users (username, user_name, user_avatar, user_prompt_persona)
       VALUES ($1, $2, $3, $4)
-      RETURNING *
+      RETURNING id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
     "#,
     user.username,
     user.user_name,
@@ -113,12 +113,12 @@ pub async fn update_user(
     // language=PostgreSQL
     r#"
       UPDATE users
-      SET 
+      SET
         user_name = COALESCE($1, user_name),
         user_avatar = COALESCE($2, user_avatar),
         user_prompt_persona = COALESCE($3, user_prompt_persona)
       WHERE username = $4
-      RETURNING *
+      RETURNING id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
     "#,
     user.user_name,
     user.user_avatar,
@@ -137,19 +137,22 @@ pub async fn update_user(
   }
 }
 
-pub async fn remove_user(db: Extension<PgPool>, username: String) -> Result<(), Error> {
-  let result = sqlx::query!(
+pub async fn remove_user(db: Extension<PgPool>, username: String) -> Result<UserModel, Error> {
+  let result = sqlx::query_as!(
+    UserModel,
+    // language=PostgreSQL
     r#"
       DELETE FROM users
       WHERE username = $1
+      RETURNING id, username, user_name, user_avatar, user_prompt_persona, created_at, updated_at
     "#,
     username
   )
-  .execute(&*db)
+  .fetch_one(&*db)
   .await;
 
   match result {
-    Ok(_) => Ok(()),
+    Ok(user) => Ok(user),
     Err(err) => {
       error!("Failed to delete user: {:?}", err);
       Err(Error::Sqlx(err))

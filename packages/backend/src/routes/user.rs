@@ -1,48 +1,50 @@
 use crate::{
   error::Error,
-  models::user::UserModel,
+  middlewares::check_auth,
   repositories::user,
+  utils::json::json_wrapper,
   validation::user::{CreateUserSchema, UpdateUserSchema},
 };
-use axum::{extract::Path, middleware, routing::*, Extension, Json};
+use axum::{extract::Path, middleware, response::IntoResponse, routing::*, Extension, Json};
 use sqlx::PgPool;
-
-use super::middlewares::check_auth;
 
 // TODO: Should add password hashing, validation, and other security measures
 async fn create_user(
   db: Extension<PgPool>,
   Json(payload): Json<CreateUserSchema>,
-) -> Result<Json<UserModel>, Error> {
+) -> Result<impl IntoResponse, Error> {
   let user = user::create_user(db, payload).await?;
-  Ok(Json(user))
+  Ok(json_wrapper(user))
 }
 
-async fn get_users(db: Extension<PgPool>) -> Result<Json<Vec<UserModel>>, Error> {
+async fn get_users(db: Extension<PgPool>) -> Result<impl IntoResponse, Error> {
   let users = user::get_users(db).await?;
-  Ok(Json(users))
+  Ok(json_wrapper(users))
 }
 
 async fn get_user(
   db: Extension<PgPool>,
   Path(username): Path<String>,
-) -> Result<Json<UserModel>, Error> {
+) -> Result<impl IntoResponse, Error> {
   let user = user::get_user(db, username).await?;
-  Ok(Json(user))
+  Ok(json_wrapper(user))
 }
 
 async fn update_user(
   db: Extension<PgPool>,
   Path(username): Path<String>,
   Json(payload): Json<UpdateUserSchema>,
-) -> Result<Json<UserModel>, Error> {
+) -> Result<impl IntoResponse, Error> {
   let user = user::update_user(db, username, payload).await?;
-  Ok(Json(user))
+  Ok(json_wrapper(user))
 }
 
-async fn delete_user(db: Extension<PgPool>, Path(username): Path<String>) -> Result<(), Error> {
-  user::remove_user(db, username).await?;
-  Ok(())
+async fn delete_user(
+  db: Extension<PgPool>,
+  Path(username): Path<String>,
+) -> Result<impl IntoResponse, Error> {
+  let user = user::remove_user(db, username).await?;
+  Ok(json_wrapper(user))
 }
 
 pub fn create_router() -> Router {
@@ -52,5 +54,5 @@ pub fn create_router() -> Router {
       "/users/:username",
       get(get_user).patch(update_user).delete(delete_user),
     )
-    .route_layer(middleware::from_fn(check_auth))
+    .route_layer(middleware::from_fn(check_auth::get_middleware_fn))
 }

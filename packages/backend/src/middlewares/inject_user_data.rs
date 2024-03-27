@@ -9,10 +9,9 @@ use crate::{
   error::Error,
   models::user::UserData,
   repositories::{user::get_user, user_sessions::get_user_session_by_token_p1},
-  utils::auth::logout,
 };
 
-pub async fn inject_user_data(
+pub async fn get_middleware_fn(
   db: Extension<PgPool>,
   cookie: Option<TypedHeader<Cookie>>,
   mut request: Request<Body>,
@@ -40,8 +39,8 @@ pub async fn inject_user_data(
               let expires_at = user_session.expires_at.and_utc().timestamp();
               if expires_at > Utc::now().timestamp() {
                 let user = get_user(db.clone(), user_session.user_id.to_string()).await;
-                debug!("Logged User: {:?}", user);
                 if let Ok(user) = user {
+                  debug!("Injecting User Data: {:?}", user.username);
                   request.extensions_mut().insert(Some(UserData {
                     id: user.id,
                     username: user.username,
@@ -60,29 +59,4 @@ pub async fn inject_user_data(
   }
 
   Ok(next.run(request).await)
-}
-
-pub async fn check_auth(
-  cookie: Option<TypedHeader<Cookie>>,
-  Extension(user_data): Extension<Option<UserData>>,
-  request: Request<Body>,
-  next: Next,
-) -> Result<impl IntoResponse, Error> {
-  debug!("Checking auth...");
-  if let Some(user_data) = user_data {
-    // Add check for expiration time; if expired, call logout to permanently remove session and return unauthorized
-    if user_data.current_session_expire_at < Utc::now().timestamp() {
-      logout(
-        // Pass the session_token as an argument to the logout function
-        cookie,
-        Extension(request.extensions().get::<PgPool>().unwrap().clone()),
-      )
-      .await?;
-      return Err(Error::Unauthorized);
-    }
-    debug!("Logged User: {:?}", user_data);
-    Ok(next.run(request).await)
-  } else {
-    Err(Error::Unauthorized)
-  }
 }

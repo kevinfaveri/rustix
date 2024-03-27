@@ -14,7 +14,7 @@ pub async fn insert_oauth2_state_storage(
     OAuth2StateStorageModel,
     // language=PostgreSQL
     r#"
-      INSERT INTO oauth2_state_storage (csrf_state, pkce_code_verifier) 
+      INSERT INTO oauth2_state_storage (csrf_state, pkce_code_verifier)
       VALUES ($1, $2)
       RETURNING id, csrf_state, pkce_code_verifier
     "#,
@@ -40,7 +40,9 @@ pub async fn delete_oauth2_state_storage(
     OAuth2StateStorageModel,
     // language=PostgreSQL
     r#"
-      DELETE FROM oauth2_state_storage WHERE csrf_state = $1 RETURNING id, csrf_state, pkce_code_verifier
+      DELETE FROM oauth2_state_storage
+      WHERE csrf_state = $1
+      RETURNING id, csrf_state, pkce_code_verifier
     "#,
     state.secret(),
   )
