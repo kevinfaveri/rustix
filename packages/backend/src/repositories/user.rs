@@ -5,11 +5,11 @@ use crate::{
 };
 use axum::Extension;
 use sqlx::PgPool;
-use tracing::debug;
+use tracing::{debug, error};
 
 pub async fn get_users(db: Extension<PgPool>) -> Result<Vec<UserModel>, Error> {
   debug!("Getting users...");
-  let users = sqlx::query_as!(
+  let result = sqlx::query_as!(
     UserModel,
     // language=PostgreSQL
     r#"
@@ -19,14 +19,20 @@ pub async fn get_users(db: Extension<PgPool>) -> Result<Vec<UserModel>, Error> {
     "#,
   )
   .fetch_all(&*db)
-  .await?;
+  .await;
 
-  Ok(users)
+  match result {
+    Ok(users) => Ok(users),
+    Err(err) => {
+      error!("Failed to get users: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
 
 pub async fn get_user(db: Extension<PgPool>, username_or_id: String) -> Result<UserModel, Error> {
   debug!("Get user...");
-  let user = sqlx::query_as!(
+  let result = sqlx::query_as!(
     UserModel,
     // language=PostgreSQL
     r#"
@@ -37,16 +43,23 @@ pub async fn get_user(db: Extension<PgPool>, username_or_id: String) -> Result<U
     username_or_id
   )
   .fetch_one(&*db)
-  .await?;
+  .await;
 
-  Ok(user)
+  match result {
+    Ok(user) => Ok(user),
+    Err(err) => {
+      error!("Failed to get user: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
 
 pub async fn create_user(
   db: Extension<PgPool>,
   user: CreateUserSchema,
 ) -> Result<UserModel, Error> {
-  let user = sqlx::query_as!(
+  debug!("Creating user...");
+  let result = sqlx::query_as!(
     UserModel,
     // language=PostgreSQL
     r#"
@@ -60,9 +73,15 @@ pub async fn create_user(
     user.user_prompt_persona
   )
   .fetch_one(&*db)
-  .await?;
+  .await;
 
-  Ok(user)
+  match result {
+    Ok(user) => Ok(user),
+    Err(err) => {
+      error!("Failed to create user: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
 
 pub async fn update_user(
@@ -70,7 +89,7 @@ pub async fn update_user(
   username: String,
   user: UpdateUserSchema,
 ) -> Result<UserModel, Error> {
-  let user = sqlx::query_as!(
+  let result = sqlx::query_as!(
     UserModel,
     // language=PostgreSQL
     r#"
@@ -88,13 +107,19 @@ pub async fn update_user(
     username
   )
   .fetch_one(&*db)
-  .await?;
+  .await;
 
-  Ok(user)
+  match result {
+    Ok(user) => Ok(user),
+    Err(err) => {
+      error!("Failed to update user: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
 
 pub async fn remove_user(db: Extension<PgPool>, username: String) -> Result<(), Error> {
-  sqlx::query!(
+  let result = sqlx::query!(
     r#"
       DELETE FROM users
       WHERE username = $1
@@ -102,7 +127,13 @@ pub async fn remove_user(db: Extension<PgPool>, username: String) -> Result<(), 
     username
   )
   .execute(&*db)
-  .await?;
+  .await;
 
-  Ok(())
+  match result {
+    Ok(_) => Ok(()),
+    Err(err) => {
+      error!("Failed to delete user: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }

@@ -1,15 +1,16 @@
 use axum::Extension;
 use oauth2::{CsrfToken, PkceCodeVerifier};
 use sqlx::PgPool;
+use tracing::error;
 
-use crate::models::oauth2_state_storage::OAuth2StateStorageModel;
+use crate::{error::Error, models::oauth2_state_storage::OAuth2StateStorageModel};
 
 pub async fn insert_oauth2_state_storage(
   db: Extension<PgPool>,
   csrf_state: &CsrfToken,
   pkce_code_verifier: &PkceCodeVerifier,
-) -> Result<OAuth2StateStorageModel, sqlx::Error> {
-  let res = sqlx::query_as!(
+) -> Result<OAuth2StateStorageModel, Error> {
+  match sqlx::query_as!(
     OAuth2StateStorageModel,
     // language=PostgreSQL
     r#"
@@ -21,16 +22,21 @@ pub async fn insert_oauth2_state_storage(
     pkce_code_verifier.secret(),
   )
   .fetch_one(&*db)
-  .await?;
-
-  Ok(res)
+  .await
+  {
+    Ok(res) => Ok(res),
+    Err(err) => {
+      error!("Failed to insert oauth2 state storage: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
 
 pub async fn delete_oauth2_state_storage(
   db: Extension<PgPool>,
   state: &CsrfToken,
-) -> Result<OAuth2StateStorageModel, sqlx::Error> {
-  let res = sqlx::query_as!(
+) -> Result<OAuth2StateStorageModel, Error> {
+  match sqlx::query_as!(
     OAuth2StateStorageModel,
     // language=PostgreSQL
     r#"
@@ -39,7 +45,12 @@ pub async fn delete_oauth2_state_storage(
     state.secret(),
   )
   .fetch_one(&*db)
-  .await?;
-
-  Ok(res)
+  .await
+  {
+    Ok(res) => Ok(res),
+    Err(err) => {
+      error!("Failed to delete oauth2 state storage: {:?}", err);
+      Err(Error::Sqlx(err))
+    }
+  }
 }
